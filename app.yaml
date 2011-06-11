@@ -1,0 +1,11 @@
+application: io-storage
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /.*
+  script: io-storage.py
+
+builtins:
+- datastore_admin: on
