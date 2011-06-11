@@ -13,13 +13,6 @@ class HighScore(db.Model):
 class MainPage(webapp.RequestHandler):
   def get(self):
     self.response.out.write('<html><body>')
-
-    highscores = db.GqlQuery("SELECT * "
-                             "FROM HighScore")
-
-    for sc in highscores:
-      self.response.out.write(cgi.escape(sc.username)+':'+cgi.escape(sc.score+';'))
-    
     self.response.out.write("""
           <form action="/sign" method="post">
             <div><textarea name="content" rows="1" cols="30"></textarea></div>
@@ -35,12 +28,26 @@ class Guestbook(webapp.RequestHandler):
     sc.username = self.request.get('content')
     sc.score = self.request.get('score')
     sc.put()
-    self.redirect('/')
+    self.redirect('/scores')
 
+class ScorePage(webapp.RequestHandler):
+  def get(self):
+    #self.response.out.write('<html><body>')
+
+    highscores = db.GqlQuery("SELECT * "
+                             "FROM HighScore "
+                             "ORDER BY score DESC")
+
+    for sc in highscores:
+      self.response.out.write(cgi.escape(sc.username)+':'+cgi.escape(sc.score+';'))
+    
+    #self.response.out.write('</body></html>')
+    
 
 application = webapp.WSGIApplication([
   ('/', MainPage),
-  ('/sign', Guestbook)
+  ('/sign', Guestbook),
+  ('/scores', ScorePage)
 ], debug=True)
 
 
